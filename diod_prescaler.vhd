@@ -6,7 +6,6 @@ use IEEE.numeric_std.ALL;
 entity diod_prescaler is
 	generic(
 		INPUT_FREQUENCY : integer := 100000000;	 -- value input frequency
-		PRESCALER_DIVIDE : integer := 100000;  -- value to divide base input clock
 		DUTY_CYCLE : integer := 2;  -- duty cycle on %
 		NUMBER_OF_LED : integer := 6 
 		);
@@ -30,18 +29,24 @@ begin
 	
 	-- SET PROPER PRESCALER VALUE --
 	process(clk_in)
-	variable divide_count : integer range 0 to PRESCALER_DIVIDE :=0;
+	
+	--we/1000 = prescaler_divide == 1000 HZ
+	variable divide_count : integer range 0 to (INPUT_FREQUENCY/10000) :=0;
 	begin
 		if rising_edge(clk_in) then
-			if rst = '1' then
+			if rst = '0' then
 				divide_count := 0;
 				clk_div <= '0';
 			else		
-				if divide_count = PRESCALER_DIVIDE/2 then
-					clk_div <= not clk_div;
-					divide_count := 0;
+				if divide_count < (INPUT_FREQUENCY/10000)/2 then
+					clk_div <= '0';
 				else
-					divide_count := divide_count + 1;
+				    clk_div <= '1';
+				end if;
+				if divide_count = (INPUT_FREQUENCY/10000) then
+				    divide_count := 0;
+				else
+				    divide_count := divide_count + 1;
 				end if;
 			end if;
 		end if;
@@ -49,13 +54,12 @@ begin
 	
 	process(clk_in, clk_div, led_in_r)
 	
-	variable presc_count : integer range 0 to (INPUT_FREQUENCY / PRESCALER_DIVIDE) := 0;
-	constant presc_value : integer := (INPUT_FREQUENCY / PRESCALER_DIVIDE);
+	variable presc_count : integer range 0 to 100 := 0;
 	
 	begin
 		if rising_edge(clk_div) then
 			for i in 0 to NUMBER_OF_LED-1 loop
-				if presc_count < (DUTY_CYCLE*presc_value/100) and led_in_r(i) = '1' then
+				if presc_count < (DUTY_CYCLE) and led_in_r(i) = '1' then
 					led_out(i) <= '1';
 				else
 					led_out(i) <= '0';

@@ -3,11 +3,14 @@
 #include "xparameters.h"
 #include "mmcm.h"
 
-#define XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT 	125000000
-#define XPAR_CLK_WIZ_0_PRIM_VCO_MAX		1200000000
-#define XPAR_CLK_WIZ_0_PRIM_VCO_MIN 	600000000
-#define XPAR_CLK_WIZ_0_PRIM_PFD_MAX 	450000000
-#define XPAR_CLK_WIZ_0_PRIM_PFD_MIN 	10000000
+#define XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT 	125000000U
+#define XPAR_CLK_WIZ_0_PRIM_VCO_MAX		1200000000U
+#define XPAR_CLK_WIZ_0_PRIM_VCO_MIN 	600000000U
+#define XPAR_CLK_WIZ_0_PRIM_PFD_MAX 	450000000U
+#define XPAR_CLK_WIZ_0_PRIM_PFD_MIN 	10000000U
+#define XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T XPAR_CLK_WIZ_0_NUM_OUT_CLKS
+#define XPAR_CLK_WIZ_0_PRIM_FREQ_OUT_MAX	800000000U
+#define XPAR_CLK_WIZ_0_PRIM_FREQ_OUT_MIN	4700000U
 
 P_MMCM_STATUS mmcm_status_t = (P_MMCM_STATUS) XPAR_CLK_WIZ_0_BASEADDR;
 P_MMCM_REG mmcm_t = (P_MMCM_REG) (XPAR_CLK_WIZ_0_BASEADDR + 0x200U);
@@ -67,6 +70,29 @@ boolean checkMmcmFreqVco(unsigned int D, unsigned int M, unsigned int M_FB)
 	}
 }
 
+boolean checkFreqOutput()
+{
+	unsigned int *ptr = &(mmcm_t->clk_reg2);
+	unsigned int check_value;
+	volatile unsigned int D = mmcm_t->divclk_div;
+	volatile unsigned int M = mmcm_t->clkfbout_mult;
+	volatile float M_FB = mmcm_t->clkfbout_frac/1000;
+	float mult = (float)M + M_FB;
+	check_value = (XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT / D) * mult;
+
+	for(int i; i < XPAR_CLK_WIZ_0_NUM_OUT_CLKS; i++)
+	{
+		if(check_value / *(ptr+(i*3)))
+			{
+				xil_printf("Value of Output divider %i correct\n\r", i);
+			}else
+			{
+				xil_printf("Value of Output divider incorrect");
+				return false;
+			}
+	}
+	return true;
+}
 void setMmcmDefault()
 {
 	print("===============================================\n\r");
@@ -94,12 +120,343 @@ void setMmcmReconfigure()
 		}
 }
 
-void setMmcmRegisters(P_MMCM_REG reg, unsigned int value)
+void setMmcmRegister(unsigned int *reg, unsigned int value)
 {
-
-
+	*reg = value;
 }
 
+void setMmcmPhase(T_MMCM_CHANNEL channel, signed int value)
+{
+	// CLKOUT0_PHASE = reg3
+	// CLKOUT1_PHASE = reg6
+	// CLKOUT2_PHASE = reg9
+	// CLKOUT3_PHASE = reg12
+	// CLKOUT4_PHASE = reg15
+	// CLKOUT5_PHASE = reg18
+	// CLKOUT6_PHASE = reg21
+
+	switch (channel)
+	{
+		case mmcm_channel_0 :
+			mmcm_t->clk_reg3 = value;
+			break;
+		case mmcm_channel_1 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_1)
+			{
+				mmcm_t->clk_reg6 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+		case mmcm_channel_2 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_2)
+			{
+				mmcm_t->clk_reg9 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+		case mmcm_channel_3 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_3)
+			{
+				mmcm_t->clk_reg12 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+		case mmcm_channel_4 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_4)
+			{
+				mmcm_t->clk_reg15 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+		case mmcm_channel_5 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_5)
+			{
+				mmcm_t->clk_reg18 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+		case mmcm_channel_6 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_6)
+			{
+				mmcm_t->clk_reg21 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+	}
+}
+
+void setMmcmDutyCycle(T_MMCM_CHANNEL channel, unsigned int value)
+{
+	// duty cycle value = (Duty Cycle in %) * 1000
+	// 50% * 1000 = 50000 = 0xC350
+	// CLKOUT0_DUTY = reg4
+	// CLKOUT1_DUTY = reg7
+	// CLKOUT2_DUTY = reg10
+	// CLKOUT3_DUTY = reg13
+	// CLKOUT4_DUTY = reg16
+	// CLKOUT5_DUTY = reg19
+	// CLKOUT6_DUTY = reg22
+
+	switch (channel)
+	{
+		case mmcm_channel_0 :
+			mmcm_t->clk_reg4 = value;
+			break;
+
+		case mmcm_channel_1 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_1)
+			{
+				mmcm_t->clk_reg7 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+
+		case mmcm_channel_2 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_2)
+			{
+				mmcm_t->clk_reg10 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+
+		case mmcm_channel_3 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_3)
+			{
+				mmcm_t->clk_reg13 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+
+		case mmcm_channel_4 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_4)
+			{
+				mmcm_t->clk_reg16 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+
+		case mmcm_channel_5 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_5)
+			{
+				mmcm_t->clk_reg19 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+			break;
+
+		case mmcm_channel_6 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_6)
+			{
+				mmcm_t->clk_reg22 = value;
+			}else xil_printf("This channel is not declarated. You have : %d channels ", XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T);
+	}
+}
+
+void setMmcmPll(unsigned int D, unsigned int M, unsigned int M_FB)
+{
+	unsigned int temp = 0;
+
+	//[7:0] divclk_div
+	//[15:8] clkfbout_mult
+	//[25:16] clkfbout_frac
+	temp = (0x000000FF & D) | (M << 8) | M_FB << 16;
+
+	mmcm_t->clk_reg0 = temp;
+
+}
+void setMmcmCounterOutput(T_MMCM_CHANNEL channel, unsigned int divide, unsigned int divide_frac)
+{
+	// CLKOUT0_DIVIDE = reg2    [17:8] divide_frac, [7:0] divide
+	// CLKOUT1_DIVIDE = reg5	[7:0] divide
+	// CLKOUT2_DIVIDE = reg8	[7:0] divide
+	// CLKOUT3_DIVIDE = reg11	[7:0] divide
+	// CLKOUT4_DIVIDE = reg14	[7:0] divide
+	// CLKOUT5_DIVIDE = reg17	[7:0] divide
+	// CLKOUT6_DIVIDE = reg20	[7:0] divide
+
+	switch(channel)
+	{
+		case mmcm_channel_0 :
+			mmcm_t->clk_reg2 = (0x0003ff00 & (divide_frac << 8)) | (0x000000ff & divide);
+			break;
+
+		case mmcm_channel_1 :
+			mmcm_t->clk_reg5 = divide;
+			break;
+
+		case mmcm_channel_2 :
+			mmcm_t->clk_reg8 = divide;
+			break;
+
+		case mmcm_channel_3 :
+			mmcm_t->clk_reg11 = divide;
+			break;
+
+		case mmcm_channel_4 :
+			mmcm_t->clk_reg14 = divide;
+			break;
+
+		case mmcm_channel_5 :
+			mmcm_t->clk_reg17 = divide;
+			break;
+
+		case mmcm_channel_6 :
+			mmcm_t->clk_reg20 = divide;
+			break;
+	}
+}
+
+unsigned int getMmcmRegister(unsigned int *reg)
+{
+	return *reg;
+}
+
+unsigned int getMmcmFreq(T_MMCM_CHANNEL channel)
+{
+	//unsigned int freq_value = 0;
+	float mult_fb = (float)mmcm_t->clkfbout_mult + (float)(mmcm_t->clkfbout_frac/1000);
+	switch (channel)
+	{
+		case mmcm_channel_0 :
+		{
+			return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * (mmcm_t->clkout0_div + (float)mmcm_t->clkout0_frac/1000)));
+			break;
+		}
+
+		case mmcm_channel_1 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_1)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout1_div));
+			}else return 0;
+
+			break;
+
+		case mmcm_channel_2 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_2)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout2_div));
+			}else return 0;
+			break;
+
+		case mmcm_channel_3 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_3)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout3_div));
+			}else return 0;
+			break;
+
+		case mmcm_channel_4 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_4)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout4_div));
+			}else return 0;
+			break;
+
+		case mmcm_channel_5 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_5)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout5_div));
+			}else return 0;
+			break;
+
+		case mmcm_channel_6 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_6)
+			{
+				return ((XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT * mult_fb) / (mmcm_t->divclk_div * mmcm_t->clkout6_div));
+			}else return 0;
+	}
+	return 0;
+}
+
+signed int getMmcmPhase(T_MMCM_CHANNEL channel)
+{
+	switch(channel)
+	{
+		case mmcm_channel_0 :
+			return mmcm_t->clk_reg3;
+			break;
+		case mmcm_channel_1 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_1)
+			{
+				return mmcm_t->clk_reg6;
+			}else return 0;
+			break;
+
+		case mmcm_channel_2 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_2)
+			{
+				return mmcm_t->clk_reg9;
+			}else return 0;
+			break;
+
+		case mmcm_channel_3 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_3)
+			{
+				return mmcm_t->clk_reg12;
+			}else return 0;
+			break;
+
+		case mmcm_channel_4 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_4)
+			{
+				return mmcm_t->clk_reg15;
+			}else return 0;
+			break;
+
+		case mmcm_channel_5 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_5)
+			{
+				return mmcm_t-> clk_reg18;
+			}else return 0;
+			break;
+
+		case mmcm_channel_6 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_6)
+			{
+				return mmcm_t-> clk_reg21;
+			}else return 0;
+	}
+	return 0;
+}
+
+unsigned int getMmcmDutyCycle(T_MMCM_CHANNEL channel)
+{
+	switch(channel)
+	{
+		case mmcm_channel_0 :
+			return mmcm_t->clk_reg4;
+			break;
+
+		case mmcm_channel_1 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_1)
+			{
+				return mmcm_t->clk_reg7;
+			}else return 0;
+			break;
+
+		case mmcm_channel_2 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_2)
+			{
+				return mmcm_t->clk_reg10;
+			}else return 0;
+			break;
+
+		case mmcm_channel_3 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_3)
+			{
+				return mmcm_t->clk_reg13;
+			}else return 0;
+			break;
+
+		case mmcm_channel_4 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_4)
+			{
+				return mmcm_t->clk_reg16;
+			}else return 0;
+			break;
+
+		case mmcm_channel_5 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_5)
+			{
+				return mmcm_t->clk_reg19;
+			}else return 0;
+			break;
+
+		case mmcm_channel_6 :
+			if(XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T-1 >= mmcm_channel_6)
+			{
+				return mmcm_t->clk_reg22;
+			}else return 0;
+	}
+	return 0;
+}
 void showMmcmRegisters()
 {
 	print("===============================================\n\r");

@@ -7,6 +7,46 @@ typedef enum{
 	false = 0
 } boolean;
 
+typedef enum{
+	mmcm_channel_0 = 0,
+	mmcm_channel_1 = 1,
+	mmcm_channel_2 = 2,
+	mmcm_channel_3 = 3,
+	mmcm_channel_4 = 4,
+	mmcm_channel_5 = 5,
+	mmcm_channel_6 = 6
+} T_MMCM_CHANNEL;
+
+typedef enum{
+	mmcm_phase_0,
+	mmcm_phase_1,
+	mmcm_phase_2,
+	mmcm_phase_3,
+	mmcm_phase_4,
+	mmcm_phase_5,
+	mmcm_phase_6
+} mmcm_phase;
+
+typedef enum{
+	mmcm_duty_0,
+	mmcm_duty_1,
+	mmcm_duty_2,
+	mmcm_duty_3,
+	mmcm_duty_4,
+	mmcm_duty_5,
+	mmcm_duty_6
+} mmcm_duty;
+
+typedef enum{
+	mmcm_freq_ch0,
+	mmcm_freq_ch1,
+	mmcm_freq_ch2,
+	mmcm_freq_ch3,
+	mmcm_freq_ch4,
+	mmcm_freq_ch5,
+	mmcm_freq_ch6
+} mmcm_freq;
+
 typedef struct{
 	unsigned int pwr_reg;
 	unsigned int clkout0_reg1;
@@ -42,7 +82,7 @@ typedef struct{
 
 typedef T_MMCM_DRP *P_MMCM_DRP;
 
-typedef struct T_MMCM_REG{
+typedef struct{
 	union{
 		unsigned int clk_reg0;  
 		struct{
@@ -67,9 +107,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg3;
+		signed int clk_reg3;
 		struct{
-			unsigned int clkout0_phase : 32;
+			signed int clkout0_phase : 32;
 		};
 	};
 	union{
@@ -105,9 +145,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg9;
+		signed int clk_reg9;
 		struct{
-			unsigned int clkout2_phase : 32;
+			signed int clkout2_phase : 32;
 		};
 	};
 	union{
@@ -124,9 +164,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg12;
+		signed int clk_reg12;
 		struct{
-			unsigned int clkout3_phase : 32;
+			signed int clkout3_phase : 32;
 		};
 	};
 	union{
@@ -143,9 +183,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg15;
+		signed int clk_reg15;
 		struct{
-			unsigned int clkout4_phase : 32;
+			signed int clkout4_phase : 32;
 		};
 	};
 	union{
@@ -162,9 +202,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg18;
+		signed int clk_reg18;
 		struct{
-			unsigned int clkout5_phase : 32;
+			signed int clkout5_phase : 32;
 		};
 	};
 	union{
@@ -181,9 +221,9 @@ typedef struct T_MMCM_REG{
 		};
 	};
 	union{
-		unsigned int clk_reg21;
+		signed int clk_reg21;
 		struct{
-			unsigned int clkout6_phase : 32;
+			signed int clkout6_phase : 32;
 		};
 	};
 	union{
@@ -223,17 +263,26 @@ typedef T_MMCM_STATUS *P_MMCM_STATUS;
 
 void setMmcmDefault();
 void setMmcmReconfigure();
-void setMmcmRegisters(P_MMCM_REG reg, unsigned int value);
-void setMmcmDutyCycle();
-void setMmcmPhase();
-void setMmcmFrequency();
+void setMmcmRegister(unsigned int *reg, unsigned int value);
+void setMmcmDutyCycle(T_MMCM_CHANNEL channel, unsigned int value);
+void setMmcmPhase(T_MMCM_CHANNEL channel, signed int value);
+void setMmcmFrequency(); //T_MMCM_CHANNEL, unsigned int value
+void setMmcmPll(unsigned int D, unsigned int M, unsigned int M_FB);
+void setMmcmCounterOutput(T_MMCM_CHANNEL channel, unsigned int divide, unsigned int divide_frac);
+
+unsigned int getMmcmRegister(unsigned int *reg);
+unsigned int getMmcmFreq(T_MMCM_CHANNEL channel);
+signed int getMmcmPhase(T_MMCM_CHANNEL channel);
+unsigned int getMmcmDutyCycle(T_MMCM_CHANNEL channel);
 
 void showMmcmRegisters();
 void showMmcmAddrMap();
 boolean checkMmcmFreqPfd(unsigned int D); //, unsigned int *M, unsigned int *M_FB);
 boolean checkMmcmFreqVco(unsigned int D, unsigned int M, unsigned int M_FB);
+boolean checkFreqOutput();
 
 
 int xil_FloatToIntAfterDec(float value);
 int xil_FloatToIntDec(float value);
+
 #endif

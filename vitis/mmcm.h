@@ -18,34 +18,16 @@ typedef enum{
 } T_MMCM_CHANNEL;
 
 typedef enum{
-	mmcm_phase_0,
-	mmcm_phase_1,
-	mmcm_phase_2,
-	mmcm_phase_3,
-	mmcm_phase_4,
-	mmcm_phase_5,
-	mmcm_phase_6
-} mmcm_phase;
-
-typedef enum{
-	mmcm_duty_0,
-	mmcm_duty_1,
-	mmcm_duty_2,
-	mmcm_duty_3,
-	mmcm_duty_4,
-	mmcm_duty_5,
-	mmcm_duty_6
-} mmcm_duty;
-
-typedef enum{
-	mmcm_freq_ch0,
-	mmcm_freq_ch1,
-	mmcm_freq_ch2,
-	mmcm_freq_ch3,
-	mmcm_freq_ch4,
-	mmcm_freq_ch5,
-	mmcm_freq_ch6
-} mmcm_freq;
+	mmcm_frac_0 = 0,
+	mmcm_frac_125 = 125,
+	mmcm_frac_250 = 250,
+	mmcm_frac_375 = 375,
+	mmcm_frac_500 = 500,
+	mmcm_frac_625 = 625,
+	mmcm_frac_750 = 750,
+	mmcm_frac_875 = 875,
+	mmcm_frac_1000 = 1000
+}T_MMCM_FRACTIONAL;
 
 typedef struct{
 	unsigned int pwr_reg;
@@ -267,8 +249,9 @@ void setMmcmRegister(unsigned int *reg, unsigned int value);
 void setMmcmDutyCycle(T_MMCM_CHANNEL channel, unsigned int value);
 void setMmcmPhase(T_MMCM_CHANNEL channel, signed int value);
 void setMmcmFrequency(); //T_MMCM_CHANNEL, unsigned int value
-void setMmcmPll(unsigned int D, unsigned int M, unsigned int M_FB);
-void setMmcmCounterOutput(T_MMCM_CHANNEL channel, unsigned int divide, unsigned int divide_frac);
+void setMmcmPll(unsigned int D, unsigned int M, T_MMCM_FRACTIONAL M_FB);
+void setMmcmCounterOutput(T_MMCM_CHANNEL channel, unsigned int divide, T_MMCM_FRACTIONAL divide_frac);
+
 
 unsigned int getMmcmRegister(unsigned int *reg);
 unsigned int getMmcmFreq(T_MMCM_CHANNEL channel);

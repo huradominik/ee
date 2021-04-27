@@ -69,11 +69,25 @@ int main()
     showMmcmRegisters();
     showMmcmAddrMap();
 
-    setMmcmRegisters(mmcm->clk_reg0, 0x1F42806);
+    setMmcmPll(5, 36, mmcm_frac_0);
+    setMmcmCounterOutput(mmcm_channel_0, 4, mmcm_frac_0);
+    setMmcmCounterOutput(mmcm_channel_1, 9, mmcm_frac_0);
+    setMmcmCounterOutput(mmcm_channel_2, 2, mmcm_frac_0);
+    setMmcmCounterOutput(mmcm_channel_3, 4, mmcm_frac_0);
 
-    xil_printf("reg0 : %x\n\r", mmcm->clk_reg0);
-    mmcm->clk_reg0 = 0x1F42806;
-    xil_printf("reg0 : %x\n\r", mmcm->clk_reg0);
+    setMmcmDutyCycle(mmcm_channel_2, 0x2710);
+    setMmcmDutyCycle(mmcm_channel_3, 0x1000);
+
+    boolean a = checkFreqOutput();
+    setMmcmReconfigure();
+
+    xil_printf("FREQENCY CH0 : %d Hz\n\r", getMmcmFreq(mmcm_channel_0));
+    xil_printf("FREQENCY CH1 : %d Hz\n\r", getMmcmFreq(mmcm_channel_1));
+    xil_printf("FREQENCY CH2 : %d Hz\n\r", getMmcmFreq(mmcm_channel_2));
+	xil_printf("FREQENCY CH3 : %d Hz\n\r", getMmcmFreq(mmcm_channel_3));
+	xil_printf("FREQENCY CH4 : %d Hz\n\r", getMmcmFreq(mmcm_channel_4));
+
+	setMmcmDefault();
     setMmcmReconfigure();
 
     mmcm->clkout1_div = 4;
@@ -84,15 +98,17 @@ int main()
 
     setMmcmDefault();
 
-    mmcm->clk_reg0 = 0x1F40820;
+    setMmcmRegister(&mmcm->clk_reg0, 0x1F40820);
     setMmcmReconfigure();
-    mmcm->clk_reg0 = 0x1F4100C;
+
+    setMmcmRegister(&mmcm->clk_reg0, 0x1F4100C);
     setMmcmReconfigure();
-    mmcm->clk_reg0 = 0x1F4200C;
+
+    setMmcmRegister(&mmcm->clk_reg0, 0x1F4200C);
     setMmcmReconfigure();
 
     //test factory//
-    mmcm->clk_reg0 = 0x1F42806;
+    setMmcmRegister(&mmcm->clk_reg0, 0x1F42806);
     setMmcmReconfigure();
 
 

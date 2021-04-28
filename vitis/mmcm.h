@@ -46,12 +46,12 @@ typedef struct{
 	unsigned int clkout6_reg1;
 	unsigned int clkout6_reg2;
 	unsigned int div_clk_reg;
-	unsigned int clkfgout_reg1;
+	unsigned int clkfbout_reg1;
 	unsigned int clkfbout_reg2;
 	unsigned int lock_reg1;
 	unsigned int lock_reg2;
 	unsigned int lock_reg3;
-	unsigned int filer_reg1;
+	unsigned int filter_reg1;
 	unsigned int filter_reg2;
 	union{
 		unsigned int clk_reg24;
@@ -264,8 +264,10 @@ boolean checkMmcmFreqPfd(unsigned int D); //, unsigned int *M, unsigned int *M_F
 boolean checkMmcmFreqVco(unsigned int D, unsigned int M, unsigned int M_FB);
 boolean checkFreqOutput();
 
+void setMmcmDrpFreq(unsigned int *tab, T_MMCM_DRP *addr);
 
 int xil_FloatToIntAfterDec(float value);
 int xil_FloatToIntDec(float value);
+
 
 #endif

@@ -3,17 +3,41 @@
 #include "xparameters.h"
 #include "mmcm.h"
 
-#define XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT 	125000000U
+// PARAMETERS FOR ZYNQ 7000 7S  "DS187"//
+// MORE INFO "DC and AC Switching Characteristic Datasheet Xilinx"
 #define XPAR_CLK_WIZ_0_PRIM_VCO_MAX		1200000000U
 #define XPAR_CLK_WIZ_0_PRIM_VCO_MIN 	600000000U
 #define XPAR_CLK_WIZ_0_PRIM_PFD_MAX 	450000000U
 #define XPAR_CLK_WIZ_0_PRIM_PFD_MIN 	10000000U
-#define XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T XPAR_CLK_WIZ_0_NUM_OUT_CLKS
 #define XPAR_CLK_WIZ_0_PRIM_FREQ_OUT_MAX	800000000U
 #define XPAR_CLK_WIZ_0_PRIM_FREQ_OUT_MIN	4700000U
 
+#define XPAR_CLK_WIZ_0_PRIM_IN_FREQ_UINT 	125000000U
+#define XPAR_CLK_WIZ_0_NUM_OUT_CLKS_T XPAR_CLK_WIZ_0_NUM_OUT_CLKS
+
 P_MMCM_STATUS mmcm_status_t = (P_MMCM_STATUS) XPAR_CLK_WIZ_0_BASEADDR;
 P_MMCM_REG mmcm_t = (P_MMCM_REG) (XPAR_CLK_WIZ_0_BASEADDR + 0x200U);
+
+//DRP Write Register
+P_MMCM_DRP mmcm_drp_t = (P_MMCM_DRP) (XPAR_CLK_WIZ_0_BASEADDR + 0x300U);
+
+
+
+void setMmcmDrpFreq(unsigned int *tab, P_MMCM_DRP addr)
+{
+	unsigned int *ptr = (unsigned int*)addr;
+	for(unsigned int i=0;i<23;i++)
+	{
+		*ptr = *(tab+i);
+		xil_printf("addr = %x, value = %x \n\r",ptr,*ptr);
+		xil_printf("tab: %x , tab : %x\n\r",tab+i, *(tab+i));
+		ptr++;
+	}
+	ptr = ((unsigned int*)addr + 23);
+	*ptr = 0x3;
+}
+////////////////////////////////////////
+
 
 // FUNCTION //
 

@@ -1,6 +1,9 @@
 #ifndef MMCM_DRP_SETTINGS_H
 #define MMCM_DRP_SETTINGS_H
 
+
+
+// INPUT FREQUENCY 125 MHz
 // DRP SETTINGS //
 // CLK0 = 200MHz, CLK1 = 100MHz, CLK2 = 100MHz, CLK3 = 50MHz
 // Phase: 0.00  ,  0.00        , 0.00         , 0.00

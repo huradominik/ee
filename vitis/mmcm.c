@@ -138,6 +138,11 @@ void setMmcmReconfigure()
 		{
 			xil_printf("Durring configuration LOCKED = '0'\n\r");
 			// dopisaæ kawa³ek kodu przywracaj¹cego do ustawieñ podstawowych gdy wpadnie w stan locked = 0
+			//for(i;i<;i++)
+			//{
+			//	if(mmcm_status_t-status_locked) count++
+			//		if(count == 10) mmcm_t->clk_reg23 = 0x1;
+			//}
 		}
 		mmcm_t->clk_reg23 = 0x3;
 		print("===============================================\n\r");

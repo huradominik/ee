@@ -54,7 +54,7 @@ typedef struct{
 	unsigned int filter_reg1;
 	unsigned int filter_reg2;
 	union{
-		unsigned int clk_reg24;
+		unsigned int clk_reg24;		// 0x1 default value,   0x3 reconfiguration
 		struct{
 			unsigned int reg24_load_sen : 1;
 			unsigned int reg24_saddr : 1;
@@ -95,7 +95,7 @@ typedef struct{
 		};
 	};
 	union{
-		unsigned int clk_reg4;			// (duty cycle in %)*1000
+		unsigned int clk_reg4;			// (duty cycle in %) * 1000
 		struct{
 			unsigned int clkout0_duty : 32;  // 0xC350 default -> 50%
 		};
@@ -248,7 +248,7 @@ void setMmcmReconfigure();
 void setMmcmRegister(unsigned int *reg, unsigned int value);
 void setMmcmDutyCycle(T_MMCM_CHANNEL channel, unsigned int value);
 void setMmcmPhase(T_MMCM_CHANNEL channel, signed int value);
-void setMmcmFrequency(); //T_MMCM_CHANNEL, unsigned int value
+//void setMmcmFrequency(); //T_MMCM_CHANNEL, unsigned int value
 void setMmcmPll(unsigned int D, unsigned int M, T_MMCM_FRACTIONAL M_FB);
 void setMmcmCounterOutput(T_MMCM_CHANNEL channel, unsigned int divide, T_MMCM_FRACTIONAL divide_frac);
 
@@ -260,7 +260,7 @@ unsigned int getMmcmDutyCycle(T_MMCM_CHANNEL channel);
 
 void showMmcmRegisters();
 void showMmcmAddrMap();
-boolean checkMmcmFreqPfd(unsigned int D); //, unsigned int *M, unsigned int *M_FB);
+boolean checkMmcmFreqPfd(unsigned int D);
 boolean checkMmcmFreqVco(unsigned int D, unsigned int M, unsigned int M_FB);
 boolean checkFreqOutput();
 

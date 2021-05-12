@@ -1,0 +1,250 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x9D0474810714C365",
+      "device": "xc7z007sclg400-1",
+      "gen_directory": "../../../../eagle_eye_trigger.gen/sources_1/bd/design_1",
+      "name": "design_1",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2020.2",
+      "validated": "true"
+    },
+    "design_tree": {
+      "clk_wiz_0": "",
+      "c_counter_binary_0": "",
+      "set_time_0": "",
+      "set_time_1": "",
+      "comparator_0": ""
+    },
+    "ports": {
+      "sys_clock": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "design_1_sys_clock",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "125000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000"
+          }
+        }
+      },
+      "reset_rtl": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_HIGH"
+          }
+        }
+      },
+      "trigger_0": {
+        "direction": "O"
+      },
+      "clk_out": {
+        "type": "clk",
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "/clk_wiz_0_clk_out1",
+            "value_src": "ip_prop"
+          },
+          "FREQ_HZ": {
+            "value": "50000000",
+            "value_src": "ip_prop"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "ip_prop"
+          }
+        }
+      },
+      "LOAD_0": {
+        "type": "data",
+        "direction": "I",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      }
+    },
+    "components": {
+      "clk_wiz_0": {
+        "vlnv": "xilinx.com:ip:clk_wiz:6.0",
+        "xci_name": "design_1_clk_wiz_0_0",
+        "xci_path": "ip\\design_1_clk_wiz_0_0\\design_1_clk_wiz_0_0.xci",
+        "inst_hier_path": "clk_wiz_0",
+        "parameters": {
+          "CLKIN1_JITTER_PS": {
+            "value": "80.0"
+          },
+          "CLKOUT1_JITTER": {
+            "value": "143.688"
+          },
+          "CLKOUT1_PHASE_ERROR": {
+            "value": "96.948"
+          },
+          "CLKOUT1_REQUESTED_OUT_FREQ": {
+            "value": "50.000"
+          },
+          "CLK_IN1_BOARD_INTERFACE": {
+            "value": "sys_clock"
+          },
+          "MMCM_CLKFBOUT_MULT_F": {
+            "value": "8.000"
+          },
+          "MMCM_CLKIN1_PERIOD": {
+            "value": "8.000"
+          },
+          "MMCM_CLKOUT0_DIVIDE_F": {
+            "value": "20.000"
+          },
+          "USE_BOARD_FLOW": {
+            "value": "true"
+          }
+        }
+      },
+      "c_counter_binary_0": {
+        "vlnv": "xilinx.com:ip:c_counter_binary:12.0",
+        "xci_name": "design_1_c_counter_binary_0_0",
+        "xci_path": "ip\\design_1_c_counter_binary_0_0\\design_1_c_counter_binary_0_0.xci",
+        "inst_hier_path": "c_counter_binary_0",
+        "parameters": {
+          "CE": {
+            "value": "false"
+          },
+          "Implementation": {
+            "value": "DSP48"
+          },
+          "Load": {
+            "value": "true"
+          },
+          "Output_Width": {
+            "value": "48"
+          },
+          "Restrict_Count": {
+            "value": "false"
+          },
+          "SCLR": {
+            "value": "false"
+          },
+          "Sync_Threshold_Output": {
+            "value": "false"
+          }
+        }
+      },
+      "set_time_0": {
+        "vlnv": "xilinx.com:user:set_time:1.0",
+        "xci_name": "design_1_set_time_0_1",
+        "xci_path": "ip\\design_1_set_time_0_1\\design_1_set_time_0_1.xci",
+        "inst_hier_path": "set_time_0",
+        "parameters": {
+          "SET_VALUE": {
+            "value": "10"
+          }
+        }
+      },
+      "set_time_1": {
+        "vlnv": "xilinx.com:user:set_time:1.0",
+        "xci_name": "design_1_set_time_1_0",
+        "xci_path": "ip\\design_1_set_time_1_0\\design_1_set_time_1_0.xci",
+        "inst_hier_path": "set_time_1",
+        "parameters": {
+          "SET_VALUE": {
+            "value": "500000000"
+          }
+        }
+      },
+      "comparator_0": {
+        "vlnv": "xilinx.com:user:comparator:1.0",
+        "xci_name": "design_1_comparator_0_1",
+        "xci_path": "ip\\design_1_comparator_0_1\\design_1_comparator_0_1.xci",
+        "inst_hier_path": "comparator_0"
+      }
+    },
+    "nets": {
+      "sys_clock_1": {
+        "ports": [
+          "sys_clock",
+          "clk_wiz_0/clk_in1"
+        ]
+      },
+      "reset_rtl_1": {
+        "ports": [
+          "reset_rtl",
+          "clk_wiz_0/reset",
+          "set_time_0/rst_n",
+          "set_time_1/rst_n",
+          "comparator_0/rst_n"
+        ]
+      },
+      "clk_wiz_0_clk_out1": {
+        "ports": [
+          "clk_wiz_0/clk_out1",
+          "c_counter_binary_0/CLK",
+          "clk_out",
+          "set_time_0/clk",
+          "set_time_1/clk",
+          "comparator_0/clk"
+        ]
+      },
+      "set_time_0_Q": {
+        "ports": [
+          "set_time_0/Q",
+          "c_counter_binary_0/L"
+        ]
+      },
+      "LOAD_0_1": {
+        "ports": [
+          "LOAD_0",
+          "c_counter_binary_0/LOAD"
+        ]
+      },
+      "set_time_1_Q": {
+        "ports": [
+          "set_time_1/Q",
+          "comparator_0/d_set"
+        ]
+      },
+      "c_counter_binary_0_Q": {
+        "ports": [
+          "c_counter_binary_0/Q",
+          "comparator_0/d_real"
+        ]
+      },
+      "comparator_0_trigger": {
+        "ports": [
+          "comparator_0/trigger",
+          "trigger_0"
+        ]
+      }
+    }
+  }
+}

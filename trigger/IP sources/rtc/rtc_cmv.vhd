@@ -74,7 +74,7 @@ alias bcd_in_month_1 : std_logic_vector(3 downto 0) is bcd_in_month(3 downto 0);
 alias bcd_in_month_2 : std_logic_vector(1 downto 1) is bcd_in_month(4 downto 4);
 
 alias bcd_in_years_1 : std_logic_vector(3 downto 0) is bcd_in_years(3 downto 0);
-alias bcd_in_years_2 : std_logic_vector(3 downto 0) is bcd_in_years(3 downto 0);
+alias bcd_in_years_2 : std_logic_vector(3 downto 0) is bcd_in_years(7 downto 4);
 
 -- alias bcd output
 

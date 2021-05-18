@@ -33,7 +33,7 @@ set_property  IOSTANDARD LVCMOS33  [get_ports  trigger_0 ]
 #Pmod high-speed connectors
 ## Pmod Header JA
 ## SET PACKAGE_PIN YXX
-set_property  PACKAGE_PIN Y18  [get_ports  clk_out ]; #IO_L17P_T2_34 Sch=ja_p[1]           # ja[0]
+set_property  PACKAGE_PIN Y18  [get_ports  gen_sig ]; #IO_L17P_T2_34 Sch=ja_p[1]           # ja[0]
 #set_property  PACKAGE_PIN Y19  [get_ports  clk_out_ch3_0 ]; #IO_L17N_T2_34 Sch=ja_n[1]           # ja[1]
 #set_property  PACKAGE_PIN Y16  [get_ports  clk_out_ch2_0 ]; #IO_L7P_T1_34 Sch=ja_p[2]            # ja[2]
 #set_property  PACKAGE_PIN Y17  [get_ports  clk_out_ch2_0 ]; #IO_L7N_T1_34 Sch=ja_n[2]            # ja[3]
@@ -43,7 +43,7 @@ set_property  PACKAGE_PIN Y18  [get_ports  clk_out ]; #IO_L17P_T2_34 Sch=ja_p[1]
 #set_property PACKAGE_PIN W19  [get_ports  ja[7] ]; #IO_L22N_T3_34 Sch=ja_n[4]          # ja[7]
 
 ## IOSTANDARD YYYYXXXX
-set_property IOSTANDARD LVCMOS33 [get_ports  clk_out ];   # ja[0]
+set_property IOSTANDARD LVCMOS33 [get_ports  gen_sig ];   # ja[0]
 #set_property IOSTANDARD LVCMOS33 [get_ports  clk_out_ch2_0];    # ja[1]
 #set_property IOSTANDARD LVCMOS33 [get_ports  clk_out_ch3_1 ];    # ja[2]
 #set_property IOSTANDARD LVCMOS33 [get_ports  clk_out_ch2_1 ];    # ja[3]

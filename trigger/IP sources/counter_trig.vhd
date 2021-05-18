@@ -28,7 +28,7 @@ begin
 process(clk, rst)
 
 variable counter_value : integer range 0 to CNT_VAL := 0;
-constant cnt : integer := CNT_VAL;
+constant cnt : integer := CNT_VAL - 1;
 
 begin
 

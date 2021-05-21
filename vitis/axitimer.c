@@ -1,3 +1,12 @@
+/*
+ * AXI TIMER v1.0
+ * set mode values
+ * start timer
+ * display status timer
+ *
+ *
+ */
+
 
 #include "axitimer.h"
 #include "xparameters.h"
@@ -17,7 +26,7 @@ void setAxiTimer(unsigned int timer_count, T_AXI_TIMER_CH channel, T_AXI_TIMER_M
 
 	P_AXITIMER timer_t = (P_AXITIMER) (XPAR_TMRCTR_0_BASEADDR + offset);
 
-	unsigned int count_value = 0xffffffff - timer_count - 2;
+	unsigned int count_value = 0xffffffff - timer_count + 2;
 	timer_t->TLR0 = count_value;
 
 	timer_t->TCSR0 = 0x0;

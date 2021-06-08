@@ -53,32 +53,26 @@ begin
 			elsif(bit_mode = "10") then
 				cnt_value := 3;   -- 600/150 = 4 (8) (cnt := 2 + 1)
 			end if;
-			
+			----------------------------------------------
 			if internal_active = '1' then
 				
-				xxx := '1';
+				--xxx := '1';
 				
 				if(cnt < cnt_value) then
 					cnt := cnt + 1;
-					--frame_req_v := '1';
+					frame_req_v := '1';
 					internal_done_v := '0';
 				else
-					cnt := 0;
-					--frame_req_v := '0';
 					internal_done_v := '1';
+					frame_req_v := '0';
 				end if;
 			else
-				xxx := '0';
+				--xxx := '0';
 				cnt := 0;
 				internal_done_v := '0';
-			end if;
-			
-			if xxx  = '1' and cnt < cnt_value then
-				frame_req_v := '1';
-			else
 				frame_req_v := '0';
 			end if;
-			
+				
 		end if;
 	end if;
 	

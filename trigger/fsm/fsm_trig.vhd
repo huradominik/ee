@@ -182,10 +182,12 @@ if rising_edge(clk) then
 				
 				elsif(rising_edge(trig_soft) and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '0' and soft_f_in = '1') then
 					state := soft_mode_s;
+					idle_mode_state_v := '0';
 					exp_f_v := '0';
 					
 				elsif(rising_edge(trig_cmp) and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '1' and soft_f_in = '0') then
 					state := comp_mode_s;
+					idle_mode_state_v := '0';
 					exp_f_v := exp_flag_in;
 										
 				elsif(rising_edge(rst_active) and trig_en_v = '0') then
@@ -289,6 +291,7 @@ if rising_edge(clk) then
 			
 			if(acq_done = '1') then
 				state := idle_s;
+				spi_state_v := '1';
 				acq_image_state_v := '0';
 			end if;
 			

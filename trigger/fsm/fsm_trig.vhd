@@ -232,7 +232,7 @@ if rising_edge(clk) then
 			spi_state_v := '1';
 			-- tutaj uwzglêdniæ iloœæ przesy³anych danych przez SPI
 			
-			if(spi_last) then
+			if(spi_last = '1') then
 				spi_diff_in <= '0';
 			end if;
 			

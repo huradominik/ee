@@ -139,6 +139,14 @@ fsm_inst : entity work.fsm_trig
 		rst_done => rst_done,
 		sys_res_n => sys_res_n
 		);
+	
+	load_data_inst : entity work.load_data
+		port map(
+		clk => clk,
+		rst_n => rst,
+		ld_active => load_data_state, -- load_data_state
+		ld_done => ld_done
+		);
 		
 	internal_mode_inst : entity work.internal_mode
 		port map(
@@ -154,7 +162,6 @@ fsm_inst : entity work.fsm_trig
 			   
 	rst_active <= '0';
 	ld_active <= '0';
-	ld_done <= '0';
 	spi_done <= '0'; 
 	spi_last <= '0';
 	acq_done <= '0';
@@ -209,28 +216,18 @@ fsm_inst : entity work.fsm_trig
 	
 	
 	--LOAD DATA TEST--
-	wait for 10ns;
-	ld_active <= '1';
-	wait for 10ns; 
+	wait for 50ns;
+	ld_active <= '1'; 
 	-- load flags
 	spi_diff <= '1';
 	cmp_f <= '0';
 	soft_f <= '1';
 	--exp_flag <= '1';
-	
-	wait for 30ns;
-	ld_done <= '1';
-	wait for 10ns;
-	ld_done <= '0';
-	wait for 20 ns;
-	
+	wait until ld_done <= '1';	
 	ld_active <= '0';
-	wait for 10ns;
+	wait for 50ns;
 	ld_active <= '1';
-	wait for 10ns;
-	ld_done <= '1';
-	wait for 10ns;
-	ld_done <= '0';
+	wait until ld_done = '1';
 	ld_active <= '0';
 	wait for 50ns;
 	

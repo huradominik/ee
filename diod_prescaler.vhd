@@ -7,11 +7,12 @@ entity diod_prescaler is
 	generic(
 		INPUT_FREQUENCY : integer := 100000000;	 -- value input frequency
 		DUTY_CYCLE : integer := 2;  -- duty cycle on %
-		NUMBER_OF_LED : integer := 6 
+		NUMBER_OF_LED : integer := 6;
+		RESET_EDGE : std_logic := '0' 
 		);
 	port(
 		clk_in : in std_logic;
-		rst	   : in std_logic;
+		rst_n  : in std_logic;
 		led_in : in std_logic_vector ((NUMBER_OF_LED - 1) downto 0);
 		led_out : out std_logic_vector ((NUMBER_OF_LED -1) downto 0)
 		);
@@ -34,7 +35,7 @@ begin
 	variable divide_count : integer range 0 to (INPUT_FREQUENCY/10000) :=0;
 	begin
 		if rising_edge(clk_in) then
-			if rst = '0' then
+			if rst_n = RESET_EDGE then
 				divide_count := 0;
 				clk_div <= '0';
 			else		

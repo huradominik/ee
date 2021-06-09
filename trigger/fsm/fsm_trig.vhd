@@ -12,9 +12,9 @@ entity fsm_trig is
 	rst : in std_logic;
 	
 	-- AXI_REGISTERS INPUT / OUTPUTS --
-	axi_fsm_state : out std_logic_vector (9-1 downto 0);
-	axi_fsm_flags : in std_logic_vector (6-1 downto 0);
-	axi_fsm_control : in std_logic_vector (5-1 downto 0);
+	axi_fsm_state : out std_logic_vector (DATA_WIDTH-1 downto 0);
+	axi_fsm_flags : in std_logic_vector (DATA_WIDTH-1 downto 0);
+	axi_fsm_control : in std_logic_vector (DATA_WIDTH-1 downto 0);
 	
 	
 	
@@ -175,22 +175,22 @@ if rising_edge(clk) then
 				
 				trig_en_v := trig_soft xor trig_cmp;
 				
-				if(rising_edge(ld_active) and trig_en_v = '0') then
+				if(ld_active = '1' and trig_en_v = '0') then   -- rising_edge(ld_active)
 					state := load_data_s;
 					idle_mode_state_v := '0';
 					load_data_state_v := '1';
 				
-				elsif(rising_edge(trig_soft) and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '0' and soft_f_in = '1') then
+				elsif(trig_soft = '1' and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '0' and soft_f_in = '1') then --rising_edge(trig_soft)
 					state := soft_mode_s;
 					idle_mode_state_v := '0';
 					exp_f_v := '0';
 					
-				elsif(rising_edge(trig_cmp) and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '1' and soft_f_in = '0') then
+				elsif(trig_cmp = '1' and trig_en_v = '1' and ld_active = '0' and cmp_f_in = '1' and soft_f_in = '0') then  -- rising_edge(trig_cmp)
 					state := comp_mode_s;
 					idle_mode_state_v := '0';
 					exp_f_v := exp_flag_in;
 										
-				elsif(rising_edge(rst_active) and trig_en_v = '0') then
+				elsif(rst_active = '1' and trig_en_v = '0') then     -- rising_edge(rst_active)
 					state := seq_rst_s;
 					idle_mode_state_v := '0';
 					seq_rst_state_v := '1';
@@ -269,7 +269,7 @@ if rising_edge(clk) then
 			when internal_mode_s => 
 			internal_mode_state_v := '1';
 			
-			if(acq_ready) then
+			if(acq_ready = '1') then
 				state := acq_image_s;
 				internal_mode_state_v := '0';
 				acq_image_state_v := '1';
@@ -291,7 +291,7 @@ if rising_edge(clk) then
 			
 			if(acq_done = '1') then
 				state := idle_s;
-				spi_state_v := '1';
+				idle_mode_state_v := '1';
 				acq_image_state_v := '0';
 			end if;
 			

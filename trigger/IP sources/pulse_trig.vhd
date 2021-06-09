@@ -6,7 +6,9 @@ use ieee.numeric_std.all;
 entity pulse_trig is
 	generic(
 	PULSE_WIDTH : natural := 5000000;
-	RESET_EDGE : std_logic := '1'
+	RESET_EDGE : std_logic := '1';
+	ACTIVE_EDGE : std_logic := '1'
+	
 	);
 	port(
 	clk : in std_logic;
@@ -27,7 +29,7 @@ begin
 	
 process(clk, rst, pulse_in)
 
-
+variable active : std_logic := ACTIVE_EDGE;
 --constant pulse : integer := PULSE_WIDTH;
 
 begin
@@ -35,8 +37,10 @@ begin
 		if rst = RESET_EDGE then
 			flag_pulse <= '0';		
 		else
-			if pulse_in = '1' then
+			if pulse_in = '1' and active = '1' then
 				flag_pulse <= '1';
+			elsif pulse_in = '0' and active = '0' then
+			    flag_pulse <= '1';
 			else flag_pulse <= '0';
 			end if;
 		end if;

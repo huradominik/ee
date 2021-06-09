@@ -86,3 +86,215 @@ void displayRtcTime(unsigned int rtc_time_lsb, unsigned int rtc_time_msb)
 	xil_printf("year:%d  month:%d  day:%d  hrs:%d  min:%d  sec:%d  \n\r",years, month, day, hrs, min, sec);
 }
 
+
+void displayFsmState(unsigned int fsm_state)
+{
+	unsigned int temp = trigger_t->fsm_state;
+
+	xil_printf("STATE : ");
+	switch (temp)
+	{
+	case 0x1:
+		xil_printf("INITIALIZATION \n\r");
+		break;
+
+	case 0x2:
+		xil_printf("SEQUENCE RESET \n\r");
+		break;
+
+	case 0x4:
+		xil_printf("IDLE \n\r");
+		break;
+
+	case 0x8:
+		xil_printf("LOAD DATA \n\r");
+		break;
+
+	case 0x10:
+		xil_printf("SPI \n\r");
+		break;
+
+	case 0x20:
+		xil_printf("SPI TRANSFER \n\r");
+		break;
+
+	case 0x40:
+		xil_printf("INTERNAL MODE \n\r");
+		break;
+
+	case 0x80:
+		xil_printf("EXTERNAL MODE \n\r");
+		break;
+
+	case 0x100:
+		xil_printf("ACQUISITION MODE \n\r");
+		break;
+
+	default :
+		xil_printf("unknown state \n\r");
+	}
+}
+unsigned int getFsmState(unsigned int fsm_state)
+{
+	/*	09.06.2021
+	 *  Function return CMV12000 fsm state
+	 *
+	 *  0x1 - Initialization state
+	 *  0x2 - Sequence Reset state
+	 *  0x4 - Idle Mode state
+	 *  0x8 - Load Data state
+	 *  0x10 - SPI state
+	 *  0x20 - Spi Transfer Data state
+	 *  0x40 - Internal Mode state
+	 *  0x80 - External Mode state
+	 *  0x100 - Acquisition Image state
+	 *
+	 */
+
+	unsigned int temp = trigger_t->fsm_state;
+
+	switch(temp)
+	{
+	case 0x1:
+		return 0x1;
+		break;
+	case 0x2:
+		return 0x2;
+		break;
+	case 0x4:
+		return 0x4;
+		break;
+	case 0x8:
+		return 0x8;
+		break;
+	case 0x10:
+		return 0x10;
+		break;
+	case 0x20:
+		return 0x20;
+		break;
+	case 0x40:
+		return 0x40;
+		break;
+	case 0x80:
+		return 0x80;
+		break;
+	case 0x100:
+		return 0x100;
+		break;
+	default:
+		return 0;
+		xil_printf("unknown state \n\r");
+	}
+}
+
+void cmvReset()
+{
+	/* 09.06.2021
+	 * CMV12000 SEQUENCE RESET
+	 */
+
+	unsigned int i = 0;
+
+	while(getFsmState(trigger_t->fsm_state) != 0x4 || (i < 1000))
+	{
+		i++;
+	}
+
+	if(getFsmState(trigger_t->fsm_state) == 0x4)
+	{
+		trigger_t->fsm_rst_active = 0x1;
+		while(getFsmState(trigger_t->fsm_state) == 0x2 )  // = 0
+			{
+				xil_printf("reset in progerss... \n\r");
+				trigger_t->fsm_rst_active = 0x0;
+			}
+
+			xil_printf("reset done.\n\r");
+			xil_printf("----------------------\n\r");
+	}
+	else
+	{
+		trigger_t->fsm_rst_active = 0x0;
+		xil_printf("reset FAIL\n\r");
+	}
+
+
+}
+void cmvLoadData(unsigned int ld_flag)
+{
+	/*
+	 * 09.06.2021
+	 *
+	 * CMV12000 Load Data:
+	 * - spi_diff (0)	- different settings for SPI
+	 * - cmp_f (1)		- trigger from compare time
+	 * - soft_f (2)		- software trigger flag
+	 * - exp_flag (3)	- exposure mode (0 - external, 1 - internal {for software trigger = internal})
+	 * - bit mode (5-4) - cmv bit mode ("00" - 12bit, "01" - 10bit, "10" - 8bit, "11" - not used)
+	 */
+
+	unsigned int i = 0;
+
+	while(getFsmState(trigger_t->fsm_state) != 0x4 || (i < 2000))
+	{
+		i++;
+	}
+
+	if(getFsmState(trigger_t->fsm_state) == 0x4)
+	{
+		trigger_t->fsm_flag = ld_flag;
+		trigger_t->fsm_ld_active = 0x1;
+		while(getFsmState(trigger_t->fsm_state) == 0x8 )
+			{
+				trigger_t->fsm_ld_active = 0x0;
+				xil_printf("load data in progerss... \n\r");
+			}
+			xil_printf("load data done.\n\r");
+			xil_printf("----------------------\n\r");
+	}
+	else
+	{
+		trigger_t->fsm_ld_active = 0x0;
+		xil_printf("load data FAIL\n\r");
+	}
+}
+
+
+void cmvSoftwareImageTrigger()
+{
+	/* 09.06.2021
+	 * [future] :
+	 * - add number of image acquisitnios
+	 *
+	 * Software Image Trigger
+	 *
+	 */
+
+	unsigned int i = 0;
+	while(getFsmState(trigger_t->fsm_state) != 0x4 || (i < 2000))
+	{
+		i++;
+	}
+
+	if(getFsmState(trigger_t->fsm_state) == 0x4)
+	{
+		trigger_t->fsm_trig_soft = 0x1;
+		while(getFsmState(trigger_t->fsm_state) == 0x40)
+		{
+			trigger_t->fsm_trig_soft = 0x0;
+			xil_printf("frame request\n\r");
+
+		}
+	}else
+	{
+		trigger_t->fsm_trig_soft = 0x0;
+		xil_printf("software trigger FAIL \n\r");
+	}
+}
+void cmvAcquisitionDone()
+{
+	trigger_t->fsm_acq_done = 0x1;
+	trigger_t->fsm_acq_done = 0x0;
+}
+
